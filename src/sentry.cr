@@ -2,8 +2,6 @@ require "yaml"
 require "colorize"
 
 module Sentry
-  FILE_TIMESTAMPS = {} of String => String # {file => timestamp}
-
   class Config
     include YAML::Serializable
 
@@ -145,6 +143,7 @@ module Sentry
     property display_name : String
     property should_build = true
     property files = [] of String
+    getter file_timestamps = {} of String => String # {file => timestamp}
 
     def initialize(
       @display_name : String,
@@ -229,13 +228,13 @@ module Sentry
       begin
         Dir.glob(files) do |file|
           timestamp = get_timestamp(file)
-          if FILE_TIMESTAMPS[file]? && FILE_TIMESTAMPS[file] != timestamp
-            FILE_TIMESTAMPS[file] = timestamp
+          if file_timestamps[file]? && file_timestamps[file] != timestamp
+            file_timestamps[file] = timestamp
             file_changed = true
             stdout "🤖  #{file}"
-          elsif FILE_TIMESTAMPS[file]?.nil?
+          elsif file_timestamps[file]?.nil?
             stdout "🤖  watching file: #{file}"
-            FILE_TIMESTAMPS[file] = timestamp
+            file_timestamps[file] = timestamp
             file_changed = true if (app_process && !app_process.terminated?)
           end
         end
@@ -268,7 +267,7 @@ module Sentry
           break
         end
         scan_files
-        sleep 1
+        sleep 100.milliseconds
       end
     end
 
