@@ -158,7 +158,7 @@ module Sentry
     )
       @files = files
       @should_build = should_build
-      @should_kill = false
+      @should_terminate = false
       @app_built = false
       @should_install_shards = install_shards
       @colorize = colorize
@@ -186,8 +186,8 @@ module Sentry
       app_process = @app_process
       if app_process.is_a? Process
         unless app_process.terminated?
-          stdout "🤖  killing #{display_name}..."
-          app_process.signal(:kill)
+          stdout "🤖  terminating #{display_name}..."
+          app_process.signal(:term)
           app_process.wait
         end
       end
@@ -262,7 +262,7 @@ module Sentry
       run_install_shards if @should_install_shards
 
       loop do
-        if @should_kill
+        if @should_terminate
           stdout "🤖  Powering down your SentryBot..."
           break
         end
@@ -271,8 +271,8 @@ module Sentry
       end
     end
 
-    def kill
-      @should_kill = true
+    def terminate
+      @should_terminate = true
     end
   end
 end

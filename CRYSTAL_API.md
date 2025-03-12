@@ -30,7 +30,7 @@ sentry = Sentry::ProcessRunner.new(
 sentry.run
 ```
 
-To stop a Sentry Process Runner, you may need to run the process runner in a separate thread and then use the `kill` method.
+To stop a Sentry Process Runner, you may need to run the process runner in a separate thread and then use the `terminate` method.
 
 ```ruby
 require "sentry"
@@ -44,7 +44,7 @@ sentry = Sentry::ProcessRunner.new(
 
 spawn { sentry.run }
 sleep 5
-sentry.kill
+sentry.terminate
 
 ```
 
