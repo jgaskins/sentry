@@ -187,7 +187,15 @@ module Sentry
       if app_process.is_a? Process
         unless app_process.terminated?
           stdout "🤖  terminating #{display_name}..."
-          app_process.signal(:term)
+          # Setup a timer to kill the process if it doesn't shut down gracefully within 10 seconds
+          spawn do
+            sleep 10.seconds
+            unless app_process.terminated?
+              stdout "🤖  killing #{display_name}..."
+              app_process.terminate graceful: false
+            end
+          end
+          app_process.terminate graceful: true
           app_process.wait
         end
       end
